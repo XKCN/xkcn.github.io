@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://xiaokang.me/"/>
-  <updated>2017-04-04T06:14:28.198Z</updated>
+  <updated>2017-04-06T11:54:50.206Z</updated>
   <id>http://xiaokang.me/</id>
   
   <author>
@@ -14,6 +14,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>如何利用反射机制实现前台页面共用一个servlet文件</title>
+    <link href="http://xiaokang.me/2017/04/06/three/"/>
+    <id>http://xiaokang.me/2017/04/06/three/</id>
+    <published>2017-04-06T11:47:44.000Z</published>
+    <updated>2017-04-06T11:54:50.206Z</updated>
+    
+    <content type="html"><![CDATA[<p>==</p>
+<h3 id="1-创建一个公告的servlet"><a href="#1-创建一个公告的servlet" class="headerlink" title="1.创建一个公告的servlet"></a>1.创建一个公告的servlet</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">public abstract class BaseServlet extends HttpServlet&#123;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	protected void service(HttpServletRequest req, HttpServletResponse resp) throws Exception &#123;</div><div class="line">	</div><div class="line">		</div><div class="line">		try &#123;</div><div class="line">			// 类的名称了</div><div class="line">			String className = this.getClass().getName();</div><div class="line">			// 反射调用</div><div class="line">			Class&lt;?&gt; clazz = Class.forName(className);</div><div class="line"></div><div class="line">			</div><div class="line">			</div><div class="line">			</div><div class="line">			// 方法名称</div><div class="line">			String md = req.getParameter(&quot;md&quot;);</div><div class="line">            //Method methodName = clazz.getMethod(md, HttpServletRequest.class,HttpServletResponse.class);</div><div class="line">			</div><div class="line">			Method declaredMethod = clazz.getDeclaredMethod(md, HttpServletRequest.class, HttpServletResponse.class);</div><div class="line">			// 暴力反射</div><div class="line">			declaredMethod.setAccessible(true);</div><div class="line">			declaredMethod.invoke(this, req, resp);</div><div class="line">			System.out.println(&quot;BaseServlet的service方法被调用 className = &quot; + className);</div><div class="line">		&#125; catch (Exception e) &#123;</div><div class="line">			// TODO Auto-generated catch block</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		</div><div class="line">		</div><div class="line">		</div><div class="line">		</div><div class="line">		</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="2-创建要访问的servlet"><a href="#2-创建要访问的servlet" class="headerlink" title="2.创建要访问的servlet"></a>2.创建要访问的servlet</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">~~~~</div><div class="line">package cn.sheep.servlet;</div><div class="line"></div><div class="line">import javax.servlet.http.HttpServletRequest;</div><div class="line">import javax.servlet.http.HttpServletResponse;</div><div class="line"></div><div class="line">public class UserServlet extends BaseServlet &#123;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">	//退出登录</div><div class="line">	private void doLoginOut(HttpServletRequest req, HttpServletResponse resp) &#123;</div><div class="line">		System.out.println(&quot;用户发送过来一个退出登录的请求&quot;);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	// 登录</div><div class="line">	private void doLogin(HttpServletRequest req, HttpServletResponse resp) &#123;</div><div class="line">		System.out.println(&quot;用户发送过来一个登陆请求&quot;);</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;==&lt;/p&gt;
+&lt;h3 id=&quot;1-创建一个公告的servlet&quot;&gt;&lt;a href=&quot;#1-创建一个公告的servlet&quot; class=&quot;headerlink&quot; title=&quot;1.创建一个公告的servlet&quot;&gt;&lt;/a&gt;1.创建一个公告的servlet&lt;/h3&gt;&lt;figure
+    
+    </summary>
+    
+      <category term="Java" scheme="http://xiaokang.me/categories/Java/"/>
+    
+    
+      <category term="servlet jsp" scheme="http://xiaokang.me/tags/servlet-jsp/"/>
+    
+  </entry>
   
   <entry>
     <title>人生好的心态是平静</title>

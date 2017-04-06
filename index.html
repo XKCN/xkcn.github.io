@@ -286,6 +286,155 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://xiaokang.me/2017/04/06/three/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mr.Wang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/myhead.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jacok's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/06/three/" itemprop="url">
+                  如何利用反射机制实现前台页面共用一个servlet文件
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-06T19:47:44+08:00">
+                2017-04-06
+              </time>
+			 
+			  
+            
+			
+            
+
+            
+			
+			
+			
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>==</p>
+<h3 id="1-创建一个公告的servlet"><a href="#1-创建一个公告的servlet" class="headerlink" title="1.创建一个公告的servlet"></a>1.创建一个公告的servlet</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">public abstract class BaseServlet extends HttpServlet&#123;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	protected void service(HttpServletRequest req, HttpServletResponse resp) throws Exception &#123;</div><div class="line">	</div><div class="line">		</div><div class="line">		try &#123;</div><div class="line">			// 类的名称了</div><div class="line">			String className = this.getClass().getName();</div><div class="line">			// 反射调用</div><div class="line">			Class&lt;?&gt; clazz = Class.forName(className);</div><div class="line"></div><div class="line">			</div><div class="line">			</div><div class="line">			</div><div class="line">			// 方法名称</div><div class="line">			String md = req.getParameter(&quot;md&quot;);</div><div class="line">            //Method methodName = clazz.getMethod(md, HttpServletRequest.class,HttpServletResponse.class);</div><div class="line">			</div><div class="line">			Method declaredMethod = clazz.getDeclaredMethod(md, HttpServletRequest.class, HttpServletResponse.class);</div><div class="line">			// 暴力反射</div><div class="line">			declaredMethod.setAccessible(true);</div><div class="line">			declaredMethod.invoke(this, req, resp);</div><div class="line">			System.out.println(&quot;BaseServlet的service方法被调用 className = &quot; + className);</div><div class="line">		&#125; catch (Exception e) &#123;</div><div class="line">			// TODO Auto-generated catch block</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		</div><div class="line">		</div><div class="line">		</div><div class="line">		</div><div class="line">		</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="2-创建要访问的servlet"><a href="#2-创建要访问的servlet" class="headerlink" title="2.创建要访问的servlet"></a>2.创建要访问的servlet</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line">~~~~</div><div class="line">package cn.sheep.servlet;</div><div class="line"></div><div class="line">import javax.servlet.http.HttpServletRequest;</div><div class="line">import javax.servlet.http.HttpServletResponse;</div><div class="line"></div><div class="line">public class UserServlet extends BaseServlet &#123;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">	//退出登录</div><div class="line">	private void doLoginOut(HttpServletRequest req, HttpServletResponse resp) &#123;</div><div class="line">		System.out.println(&quot;用户发送过来一个退出登录的请求&quot;);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	// 登录</div><div class="line">	private void doLogin(HttpServletRequest req, HttpServletResponse resp) &#123;</div><div class="line">		System.out.println(&quot;用户发送过来一个登陆请求&quot;);</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	</div><div class="line">	</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://xiaokang.me/2017/03/23/two/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -629,7 +778,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -640,7 +789,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -651,7 +800,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
